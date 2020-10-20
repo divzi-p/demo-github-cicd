@@ -52,9 +52,9 @@ jobs:
       - name: configure ACR details
         if: success()
         run: |
-          echo ::set-env name=AZURE_ACR_CRED:: (az acr credential show -n ${{ env.AZURE_REG_NAME }} --query passwords[0].value)
-          echo ::set-env name=AZURE_ACR_URL:: ( az acr show -n ${{ env.AZURE_REG_NAME }} --query loginServer)
-          echo ::set-env name=AZURE_ACR_USERNAME:: ( az acr credential show -n ${{ env.AZURE_REG_NAME }} --query username )
+          echo ::set-env name=AZURE_ACR_CRED:: az acr credential show -n ${{ env.AZURE_REG_NAME }} --query passwords[0].value
+          echo ::set-env name=AZURE_ACR_URL::  az acr show -n ${{ env.AZURE_REG_NAME }} --query loginServer
+          echo ::set-env name=AZURE_ACR_USERNAME::  az acr credential show -n ${{ env.AZURE_REG_NAME }} --query username 
       - name: Configure webapp to use GitHub Packages
         if: success()
         run: |
