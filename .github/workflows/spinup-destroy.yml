@@ -52,9 +52,9 @@ jobs:
       - name: Configure webapp to use GitHub Packages
         if: success()
         run: |
-          echo 'AZURE_ACR_CRED'= az acr credential show -n ${{ env.AZURE_REG_NAME }} --query passwords[0].value >> $GITHUB_ENV
-          echo 'AZURE_ACR_URL'= az acr show -n ${{ env.AZURE_REG_NAME }} --query loginServer >> $GITHUB_ENV
-          echo 'AZURE_ACR_USERNAME'= az acr credential show -n ${{ env.AZURE_REG_NAME }} --query username >> $GITHUB_ENV
+          echo "::set-env name=AZURE_ACR_CRED:: $(az acr credential show -n ${{ env.AZURE_REG_NAME }} --query passwords[0].value)"
+          echo "::set-env name=AZURE_ACR_URL:: $( az acr show -n ${{ env.AZURE_REG_NAME }} --query loginServer)"
+          echo "::set-env name=AZURE_ACR_USERNAME:: $( az acr credential show -n ${{ env.AZURE_REG_NAME }} --query username )"
           az webapp config container set --docker-custom-image-name nginx --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --docker-registry-server-url ${{ env.AZURE_ACR_URL }} --docker-registry-server-user ${{ env.AZURE_ACR_USERNAME }} --docker-registry-server-password ${{ env.AZURE_ACR_CRED }} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
         
   destroy-azure-resources:
