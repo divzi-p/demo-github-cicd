@@ -49,13 +49,16 @@ jobs:
         if: success()
         run: |
           az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  --deployment-container-image-name nginx --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      -name: configure ACR details
+        if: success()
+        run: |
+          echo ::set-env name=AZURE_ACR_CRED:: (az acr credential show -n ${{ env.AZURE_REG_NAME }} --query passwords[0].value)
+          echo ::set-env name=AZURE_ACR_URL:: ( az acr show -n ${{ env.AZURE_REG_NAME }} --query loginServer)
+          echo ::set-env name=AZURE_ACR_USERNAME:: ( az acr credential show -n ${{ env.AZURE_REG_NAME }} --query username )
       - name: Configure webapp to use GitHub Packages
         if: success()
         run: |
-          echo "::set-env name=AZURE_ACR_CRED:: $(az acr credential show -n ${{ env.AZURE_REG_NAME }} --query passwords[0].value)"
-          echo "::set-env name=AZURE_ACR_URL:: $( az acr show -n ${{ env.AZURE_REG_NAME }} --query loginServer)"
-          echo "::set-env name=AZURE_ACR_USERNAME:: $( az acr credential show -n ${{ env.AZURE_REG_NAME }} --query username )"
-          az webapp config container set --docker-custom-image-name nginx --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --docker-registry-server-url ${{ env.AZURE_ACR_URL }} --docker-registry-server-user ${{ env.AZURE_ACR_USERNAME }} --docker-registry-server-password ${{ env.AZURE_ACR_CRED }} --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az webapp config container set --docker-custom-image-name nginx --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --docker-registry-server-url $AZURE_ACR_URL --docker-registry-server-user $env.AZURE_ACR_USERNAME --docker-registry-server-password $env.AZURE_ACR_CRED --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
         
   destroy-azure-resources:
     runs-on: ubuntu-latest
