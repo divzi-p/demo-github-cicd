@@ -15,7 +15,7 @@ env:
   ### REPLACE USERNAME WITH GH USERNAME         ###
   AZURE_WEBAPP_NAME: divzi-p-cd-app
   AZURE_REG_NAME: divzipacroct20
- 
+  AZURE_REG_URL: '"https://divzipacroct20.azurecr.io"'
   #################################################
 
 jobs:
@@ -58,7 +58,7 @@ jobs:
       - name: Configure webapp to use GitHub Packages
         if: success()
         run: |
-          az webapp config container set --docker-custom-image-name nginx --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --docker-registry-server-url $AZURE_ACR_URL --docker-registry-server-user $env.AZURE_ACR_USERNAME --docker-registry-server-password $env.AZURE_ACR_CRED --subscription ${{secrets.AZURE_SUBSCRIPTION_ID}}
+          az webapp config container set --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --docker-custom-image-name divzipacroct20.azurecr.io/appsvc-cd-custom-image --docker-registry-server-url ${{ env.AZURE_REG_URL }}
         
   destroy-azure-resources:
     runs-on: ubuntu-latest
